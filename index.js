@@ -32,20 +32,18 @@ app.use(cors(corsOptions));
 // itransition-task-4
 // console.log('pool1',pool);
 
-const DATABASE_URL= `postgresql://task4itransitiongroup:pq0JriDWu5as9ZNIgdluORcFJpHyU1ni@dpg-cvf8s652ng1s73d3c490-a.oregon-postgres.render.com/task4itransitiongroup`
-
-//  postgresql://task4itransitiongroup:pq0JriDWu5as9ZNIgdluORcFJpHyU1ni@dpg-cvf8s652ng1s73d3c490-a.oregon-postgres.render.com/task4itransitiongroup
+// const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://itransition_task_4_user:LBVrtZmFvUMbaSdBUUe3X3UJ0lUSasPU@dpg-cve3m81c1ekc73ecb1i0-a.oregon-postgres.render.com/itransition_task_4';
 
 const pool = new Pool({
-    connectionString: DATABASE_URL, // Use the External Database URL here
-    ssl: {
-      rejectUnauthorized: false, // Required for Render's PostgreSQL
-    },
-  });
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 
   console.log('pool2',pool);
   
-
+  
 
 
 // CREATE TABLE users (
@@ -166,21 +164,21 @@ app.post('/users/action', async (req, res) => {
 });
 
 
-pool.connect((err, client, done) => {
-    if (err) {
-      console.error('Error connecting to the database:', err.message);
-    } else {
-      console.log('Successfully connected to the database');
-      client.query('SELECT NOW()', (err, res) => {
-        done();
-        if (err) {
-          console.error('Error executing query:', err.message);
-        } else {
-          console.log('Database time:', res.rows[0].now);
-        }
-      });
-    }
-  });
+// pool.connect((err, client, done) => {
+//     if (err) {
+//       console.error('Error connecting to the database:', err.message);
+//     } else {
+//       console.log('Successfully connected to the database');
+//       client.query('SELECT NOW()', (err, res) => {
+//         done();
+//         if (err) {
+//           console.error('Error executing query:', err.message);
+//         } else {
+//           console.log('Database time:', res.rows[0].now);
+//         }
+//       });
+//     }
+//   });
 
 
 app.get('/', (req, res) => {
