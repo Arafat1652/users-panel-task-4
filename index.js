@@ -1,9 +1,9 @@
 const express = require('express');
-const pg = require('pg');
+require('dotenv').config();
+const {Pool} = require('pg');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
-require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -13,28 +13,37 @@ const corsOptions = {
     origin: [
       'http://localhost:5173','https://task-4-user-panel.netlify.app'],
     credentials: true,
+    optionSuccessStatus: 200,
   }
 
 // middleware
 app.use(express.json())
 app.use(cors(corsOptions));
 
-// const pool = new pg.Pool({
+// const pool = new Pool({
 //     user: "postgres",
 //     host: "localhost",
-//     database: 'itransition-task-4',
+//     database: 'task4itransitiongroup',
 //     password: "arpost165242",
 //     port: 5432
 // })
 
-const pool = new pg.Pool({
-    connectionString: process.env.DATABASE_URL,
+// task4itransitiongroup
+// itransition-task-4
+// console.log('pool1',pool);
+
+const DATABASE_URL= `postgresql://task4itransitiongroup:pq0JriDWu5as9ZNIgdluORcFJpHyU1ni@dpg-cvf8s652ng1s73d3c490-a.oregon-postgres.render.com/task4itransitiongroup`
+
+//  postgresql://task4itransitiongroup:pq0JriDWu5as9ZNIgdluORcFJpHyU1ni@dpg-cvf8s652ng1s73d3c490-a.oregon-postgres.render.com/task4itransitiongroup
+
+const pool = new Pool({
+    connectionString: DATABASE_URL, // Use the External Database URL here
     ssl: {
-      rejectUnauthorized: false,
+      rejectUnauthorized: false, // Required for Render's PostgreSQL
     },
   });
 
-//   console.log(pool);
+  console.log('pool2',pool);
   
 
 
@@ -157,15 +166,21 @@ app.post('/users/action', async (req, res) => {
 });
 
 
-pool.connect((err)=>{
-    if(err){
-        console.log("the error is:",err.message);
+pool.connect((err, client, done) => {
+    if (err) {
+      console.error('Error connecting to the database:', err.message);
+    } else {
+      console.log('Successfully connected to the database');
+      client.query('SELECT NOW()', (err, res) => {
+        done();
+        if (err) {
+          console.error('Error executing query:', err.message);
+        } else {
+          console.log('Database time:', res.rows[0].now);
+        }
+      });
     }
-    else{
-        console.log("Connected to the Database task 4");
-        
-    }
-})
+  });
 
 
 app.get('/', (req, res) => {
