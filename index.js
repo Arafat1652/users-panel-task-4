@@ -1,7 +1,7 @@
 const express = require('express');
 require('dotenv').config();
-const {Pool} = require('pg');
 const cors = require('cors');
+const {Pool} = require('pg');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 
@@ -28,32 +28,33 @@ app.use(cors(corsOptions));
 //     port: 5432
 // })
 
-// task4itransitiongroup
-// itransition-task-4
 // console.log('pool1',pool);
 
-// const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://itransition_task_4_user:LBVrtZmFvUMbaSdBUUe3X3UJ0lUSasPU@dpg-cve3m81c1ekc73ecb1i0-a.oregon-postgres.render.com/itransition_task_4';
+// task4itransitiongroup
+// itransition-task-4
+
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  });
 
-  console.log('pool2',pool);
+//   console.log('pool2',pool);
   
   
 
 
-// CREATE TABLE users (
+//   CREATE TABLE users (
 //     id SERIAL PRIMARY KEY,
 //     name VARCHAR(255) NOT NULL,
 //     email VARCHAR(255) UNIQUE NOT NULL,
 //     password VARCHAR(255) NOT NULL,
 //     last_login_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//     registration_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 //     status VARCHAR(50) DEFAULT 'active' CHECK (status IN ('active', 'blocked'))
-//   )
+//   );
 
 // Routes
 
@@ -122,7 +123,7 @@ app.get('/users', async (req, res) => {
         const result = await pool.query('SELECT id, name, email, last_login_time, status FROM users ORDER BY last_login_time DESC');
         res.json(result.rows);
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 });
 
@@ -164,21 +165,21 @@ app.post('/users/action', async (req, res) => {
 });
 
 
-// pool.connect((err, client, done) => {
-//     if (err) {
-//       console.error('Error connecting to the database:', err.message);
-//     } else {
-//       console.log('Successfully connected to the database');
-//       client.query('SELECT NOW()', (err, res) => {
-//         done();
-//         if (err) {
-//           console.error('Error executing query:', err.message);
-//         } else {
-//           console.log('Database time:', res.rows[0].now);
-//         }
-//       });
-//     }
-//   });
+pool.connect((err, client, done) => {
+    if (err) {
+      console.error('Error connecting to the database:', err.message);
+    } else {
+      console.log('Successfully connected to the database');
+      client.query('SELECT NOW()', (err, res) => {
+        done();
+        if (err) {
+          console.error('Error executing query:', err.message);
+        } else {
+          console.log('Database time:', res.rows[0].now);
+        }
+      });
+    }
+  });
 
 
 app.get('/', (req, res) => {
